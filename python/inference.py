@@ -2,11 +2,12 @@ import numpy as np
 import pydicom
 import cv2
 import torch
-print('hello')
-import segmentation_models_pytorch
+import segmentation_models_pytorch as smp
 import sys
 import matplotlib.pyplot as plt
+
 margin = 70
+device = torch.device('cpu')
 
 def load_image(img_path):
     image = pydicom.dcmread(f"{img_path}").pixel_array
@@ -35,8 +36,8 @@ def preprocessing(image, margin = margin):
 
 def predict(image, model):
     image = image.transpose(2, 0, 1).astype('float32')[np.newaxis,...]
-    image_tensor = torch.cuda.FloatTensor(image)
-    predict_mask = model.predict(image_tensor).cpu().numpy()[0,:,:,:]
+    image_tensor = torch.FloatTensor(image).to(device)
+    predict_mask = model.predict(image_tensor).numpy()[0,:,:,:]
     predict_mask = predict_mask.transpose([1,2,0]).argmax(axis = 2)
     return predict_mask
 
@@ -49,26 +50,21 @@ if __name__ == "__main__":
         model_path = sys.argv[4]
     if sys.argv[5] == '-save_path':
         save_path = sys.argv[6]
-
-    #set path, model
-    model = torch.load(model_path)
-    # load image
-    image = load_image(img_path)
-    # preprocessing
-    image_tensor = preprocessing(image)
-    # predict
-    predict_mask = predict(image_tensor, model)
-    predict_mask = (predict_mask * 255 / 3).astype(np.uint8)
-    cv2.imwrite(save_path + 'input.png', image_tensor)
-    cv2.imwrite(save_path + 'output.png', predict_mask)
-
-    #print(predict_mask.shape)
-    #predict_mask = cv2.resize(predict_mask, (512 - margin, 512 - margin), cv2.INTER_AREA)
-    #padding_predict_mask = np.zeros((512,512))
-    #padding_predict_mask[margin : -margin, margin: -margin] = predict_mask
+    with torch.no_grad():
+        #set path, model
+        model = torch.load(model_path).to(device)
+        # load image
+        image = load_image(img_path)
+        # preprocessing
+        image_tensor = preprocessing(image)
+        # predict
+        predict_mask = predict(image_tensor, model)
+        predict_mask = (predict_mask * 255 / 3).astype(np.uint8)
+        cv2.imwrite(save_path + 'input.png', image_tensor)
+        cv2.imwrite(save_path + 'output.png', predict_mask)
     
-    print((predict_mask == 0).sum() / len(predict_mask.reshape(-1)) * 100)
-    print((predict_mask == 1).sum() / len(predict_mask.reshape(-1)) * 100)
-    print((predict_mask == 2).sum() / len(predict_mask.reshape(-1)) * 100)
-    print((predict_mask == 3).sum() / len(predict_mask.reshape(-1)) * 100)
+        print((predict_mask == 0).sum() / len(predict_mask.reshape(-1)) * 100)
+        print((predict_mask == 1* 255/ 3).sum() / len(predict_mask.reshape(-1)) * 100)
+        print((predict_mask == 2* 255/ 3).sum() / len(predict_mask.reshape(-1)) * 100)
+        print((predict_mask == 3* 255/ 3).sum() / len(predict_mask.reshape(-1)) * 100)
 
