@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap"
+			rel="stylesheet"
+		/>
+		<title>Body Segmentation</title>
+		<script
+			src="https://kit.fontawesome.com/321caadda4.js"
+			crossorigin="anonymous"
+		></script>
+		<script src="js/home.js" defer></script>
+	</head>
+
+	<body>
+		<nav class="navbar">
+			<div class="navbar__logo">
+				<i class="fas fa-child"></i>
+				<a href="">Body Segmentation</a>
+			</div>
+
+			<ul class="navbar__menu">
+				<li><a href="/home">Home</a></li>
+				<li><a href="/inference">Inference</a></li>
+				<li><a href="/reference">Reference</a></li>
+			</ul>
+
+			<ul class="navbar__icons">
+				<li><i class="fab fa-codepen"></i></li>
+				<li><i class="fas fa-campground"></i></li>
+			</ul>
+
+			<a href="#" class="navbar__toggleBtn">
+				<i class="fas fa-bars"></i>
+			</a>
+		</nav>
+
+		<div class="main">
+			<div class="left__content">
+				<h3 class="explain">Deep Learning Medical Serivice</h3>
+				<img
+					class="ct__image"
+					src="images/johny-georgiadis-3ewkNkfJj2k-unsplash.jpg"
+					alt="home image"
+				/>
+				<ul class="performance_box">
+					<li class="performance">Model : Unet (efficientnet-b4 encoder)</li>
+					<li class="performance">Average Dice Score : </li>
+					<li class="performance">Muscle Dice Score : </li>
+					<li class="performance">Visceral fat Dice Score : </li>
+					<li class="performance">Subcutaneous fat Dice Score : </li>
+				</ul>
+			</div>
+			<div class="right__content">
+				<h3
+				class="explain"
+				id="right__explain"
+				>Upload the CT Image</h3>
+				<div class="container">
+					<form 
+						method= "post"
+						action= "/uploads/image"
+						enctype= "multipart/form-data">
+						<input
+							type= "file"
+							name= "ct__image"
+							id=	"upload_image"
+							>
+						<input type = "submit">
+					</form>
+				</div>
+
+				<input
+					type="button"
+					class="calculate_button"
+					value="Calculate">
+
+				<div class="result">
+					<ul class="image_list">
+						<li class="image_item">
+							<img
+								class="image"
+								id = "original_image"
+								src="js/predictions/input.png"
+								alt="home image"
+							/>
+					</li>
+						<li class="image_item">
+							<img
+								class="image"
+								id = "predict_image"
+								src="js/predictions/output.png"
+								alt="home image"
+							/>
+						</li>
+					</ul>
+
+
+				</div>
+			</div>
+
+		</div>
+
+		<div class="input"></div>
+	</body>
+</html>
